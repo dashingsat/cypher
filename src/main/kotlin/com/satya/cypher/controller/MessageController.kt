@@ -2,13 +2,16 @@ package com.satya.cypher.controller
 
 import com.satya.cypher.model.Message
 import com.satya.cypher.service.MessageService
+import com.satya.cypher.service.MessagingService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/channels/{channelId}/conversations/{conversationId}/messages")
-class MessageController(private val messageService: MessageService) {
+class MessageController(private val messageService: MessageService,
+    private val messagingService: MessagingService
+    ) {
 
     @GetMapping
     fun listMessages(@PathVariable channelId: String, @PathVariable conversationId: String): ResponseEntity<List<Message>> =
@@ -52,4 +55,6 @@ class MessageController(private val messageService: MessageService) {
         messageService.deleteMessage(channelId, conversationId, messageId).let {
             ResponseEntity<Void>(HttpStatus.NO_CONTENT)
         }
+
+
 }

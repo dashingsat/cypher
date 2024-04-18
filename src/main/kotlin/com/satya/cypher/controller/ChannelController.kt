@@ -2,13 +2,16 @@ package com.satya.cypher.controller
 
 import com.satya.cypher.model.Channel
 import com.satya.cypher.service.ChannelService
+import com.satya.cypher.service.MessagingService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/channels")
-class ChannelController(private val channelService: ChannelService) {
+class ChannelController(private val channelService: ChannelService,
+    val messagingService: MessagingService
+    ) {
 
     @GetMapping
     fun listChannels(): ResponseEntity<List<Channel>> =
@@ -35,4 +38,10 @@ class ChannelController(private val channelService: ChannelService) {
         channelService.deleteChannel(channelId).let {
             ResponseEntity<Void>(HttpStatus.NO_CONTENT)
         }
+
+    @GetMapping("/test-broadcast")
+    fun testBroadcast(@RequestParam message: String): String {
+        messagingService.sendMessageToAllClients("Hello from sockIO")
+        return "Broadcast attempted for message: $message"
+    }
 }

@@ -1,5 +1,6 @@
 package com.satya.cypher.service
 
+import com.corundumstudio.socketio.SocketIOServer
 import com.satya.cypher.model.Channel
 import com.satya.cypher.model.Conversation
 import com.satya.cypher.model.Message
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class MessageService(private val messageRepository: MessageRepository ,
                      private val messagingTemplate: SimpMessagingTemplate,
+                     private val messagingService: MessagingService,
                      private val conversationRepository: ConversationRepository,
                      private val channelRepository: ChannelRepository
     ) {
@@ -20,7 +22,7 @@ class MessageService(private val messageRepository: MessageRepository ,
         messageRepository.findByConversationId(conversationId)
 
     fun createMessage(channelId: String, conversationId: String, message: Message): Message {
-
+        println("ABout to create Message")
         val channel = channelRepository.findById(channelId)
             .orElseGet {
                 // Create and save a new channel if it does not exist
@@ -41,6 +43,9 @@ class MessageService(private val messageRepository: MessageRepository ,
         message.channelId = channelId
 
         messagingTemplate.convertAndSend("/topic/conversations/", message)
+        messageRepository.save(message)
+        messagingService.sendMessageToAllClients(message)
+        println("Message broadcasted..")
         return messageRepository.save(message)
     }
 

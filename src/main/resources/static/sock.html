@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Client</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            disconnectBtn.disabled = true; // Initially disable the disconnect button
+
+            connectBtn.addEventListener('click', function() {
+                if (!window.socket) {
+                    // Initialize the socket connection
+                    window.socket = io('http://localhost:9092', {
+                        reconnection: false // Disable automatic reconnection
+                    }); // Ensure the URL matches your server
+                    setupSocketListeners();
+                    connectBtn.disabled = true; // Disable connect button after connection
+                    disconnectBtn.disabled = false; // Enable disconnect button
+                }
+            });
+
+            disconnectBtn.addEventListener('click', function() {
+                if (window.socket) {
+                    window.socket.disconnect();
+                    window.socket = null;
+                    console.log("Disconnected from the server");
+                    connectBtn.disabled = false; // Re-enable the connect button
+                    disconnectBtn.disabled = true; // Disable disconnect button
+                }
+            });
+
+            function setupSocketListeners() {
+                window.socket.on("connect", () => {
+                    console.log("Connected to the server");
+                });
+
+                // Listen for messages on the "message_event"
+                window.socket.on("message_ev", (msg) => {
+                    console.log("Received message:", msg);
+                    const messages = document.getElementById('messages');
+                    const message = document.createElement('li');
+                    message.textContent = msg.content
+                    messages.appendChild(message);
+                });
+
+                window.socket.on("disconnect", () => {
+                    console.log("Disconnected from the server");
+                    connectBtn.disabled = false; // Re-enable the connect button on disconnect
+                    disconnectBtn.disabled = true; // Keep disconnect button disabled after disconnection
+                });
+            }
+        });
+
+
+    </script>
+</head>
+<body>
+<h1>Socket.IO Test Client</h1>
+<button id="connectBtn">Connect</button>
+<button id="disconnectBtn">Disconnect</button>
+<ul id="messages"></ul>
+</body>
+</html>

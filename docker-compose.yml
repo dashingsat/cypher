@@ -1,20 +1,15 @@
-version: '3.9'
-
+version: "3.9"
 services:
-  postgres:
-    image: postgres:15.6
+  db:
+    image: "postgres:15.3"
     environment:
+      POSTGRES_USER: local_user
+      POSTGRES_PASSWORD: local_pass
       POSTGRES_DB: postgres
-      POSTGRES_USER: cypher_user
-      POSTGRES_PASSWORD: cypher_pass
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/Users/dashingsat/data
-    restart: unless-stopped
+      - 5432:5432
+  zk:
+    image: "zookeeper:3.5.6"
 
-volumes:
-  postgres_data:
-    driver: local
-
-
+    ports:
+      - 2181:2181
