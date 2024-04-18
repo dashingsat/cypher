@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: cypher
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cypher
+    username: cypher_user
+    password: cypher_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
